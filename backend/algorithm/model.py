@@ -6,8 +6,8 @@ import json
 from json import JSONEncoder
 
 
-dataset_path = '/Users/eeeeeeshen/Downloads/SP24/CS510/final project/CS510-Team8/backend/algorithm/Training.csv'
-KN_pkl_path = "/Users/eeeeeeshen/Downloads/SP24/CS510/final project/CS510-Team8/backend/algorithm/KN.pkl"
+dataset_path = './backend/algorithm/Training.csv'
+KN_pkl_path = "./backend/algorithm/KN.pkl"
 def set_list(train_file):
         training = pd.read_csv(train_file)
         X = training.iloc[:,:-1]
