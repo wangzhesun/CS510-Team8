@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import json
 from json import JSONEncoder
+from .test_1 import *
 
 
 dataset_path = '/Users/eeeeeeshen/Downloads/SP24/CS510/final project/CS510-Team8/backend/algorithm/Training.csv'
@@ -27,6 +28,7 @@ sympton_list, disease_list = set_list(dataset_path)
 class ModelName:
     def __init__(self):
         self.variable = 1
+        self.query = None
 
     def predict(self,user_input_sym):
         KN = pickle.load(open(KN_pkl_path,'rb'))
@@ -39,16 +41,18 @@ class ModelName:
         disease = disease_list[pre_dis_index]
         # print(pre_dis)
         return disease
-    
-    def analyze(self, query):
-        user_symptoms = query.split(",")
-        user_symptoms = [sym.strip() for sym in user_symptoms]
 
+    def analyze(self, query):
+        
+        self.query = query
+        processed_user_symptoms = process_user_input(query)
+        # user_symptoms = processed_user_symptoms.split(",")
+        user_symptoms = [sym.strip() for sym in processed_user_symptoms]
+        print(processed_user_symptoms)
         print(user_symptoms)
         model = ModelName()
         predicted_disease = model.predict(user_symptoms)
         print(predicted_disease)
         result = predicted_disease.tolist()
-        # result = json.dumps({"": predicted_disease.tolist()})
-        # result = JSONEncoder.default(self, result)
+        
         return result[0]
