@@ -48,7 +48,7 @@ class ModelName:
         model = ModelName()
         predicted_disease = model.predict(user_symptoms)
         print(predicted_disease)
-        # result = predicted_disease.tolist()
-        result = json.dumps({"": predicted_disease.tolist()})
+        result = predicted_disease.tolist()
+        # result = json.dumps({"": predicted_disease.tolist()})
         # result = JSONEncoder.default(self, result)
-        return result
+        return result[0]
