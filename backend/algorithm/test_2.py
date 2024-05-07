@@ -11,33 +11,37 @@ from nltk.tokenize import word_tokenize
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 
+threshold = 0.99
+final_keywords = set()
+potential_keywords = set()
+
 def chunk_sentence(sentence):
-    # Tokenize the sentence into words
-    words = word_tokenize(sentence)
+	# Tokenize the sentence into words
+	words = word_tokenize(sentence)
 
-    # Define the grammar for chunking
-    grammar = r"""
-        NP: {<DT|JJ|NN.*>+}  # Noun Phrase
-        PP: {<IN><NP>}       # Prepositional Phrase
-        VP: {<VB.*><NP|PP>*} # Verb Phrase
-    """
+	# Define the grammar for chunking
+	grammar = r"""
+		NP: {<DT|JJ|NN.*>+}  # Noun Phrase
+		PP: {<IN><NP>}       # Prepositional Phrase
+		VP: {<VB.*><NP|PP>*} # Verb Phrase
+	"""
 
-    # Create a chunk parser
-    chunk_parser = nltk.RegexpParser(grammar)
+	# Create a chunk parser
+	chunk_parser = nltk.RegexpParser(grammar)
 
-    # Part-of-speech tag the words
-    tagged_words = nltk.pos_tag(words)
+	# Part-of-speech tag the words
+	tagged_words = nltk.pos_tag(words)
 
-    # Chunk the tagged words
-    tree = chunk_parser.parse(tagged_words)
+	# Chunk the tagged words
+	tree = chunk_parser.parse(tagged_words)
 
-    # Extract phrases from the parse tree
-    phrases = []
-    for subtree in tree.subtrees(filter=lambda t: t.label() != 'S'):
-        phrase = ' '.join([word for word, tag in subtree.leaves()])
-        phrases.append(phrase)
+	# Extract phrases from the parse tree
+	phrases = []
+	for subtree in tree.subtrees(filter=lambda t: t.label() != 'S'):
+		phrase = ' '.join([word for word, tag in subtree.leaves()])
+		phrases.append(phrase)
 
-    return phrases
+	return phrases
 
 
 
@@ -76,26 +80,33 @@ keyword_tfidf_scores_list = []
 combined_scores_list = []
 
 for j in range(len(input_embeds)):
-    bert_scores = {keywords[i]: cosine_similarity(input_embeds[j], keyword_embeds[i]).item() for i in range(len(keywords))}
-    bert_scores_list.append(bert_scores)
-    
-    # texts = [seg_user_input[j]] + keywords
-    # vectorizer = TfidfVectorizer()
-    # tfidf_matrix = vectorizer.fit_transform(texts)
-    # tfidf_array = tfidf_matrix.toarray()
-    # keyword_tfidf_scores = {keywords[i]: tfidf_array[0] @ tfidf_array[i + 1] for i in range(len(keywords))}
-    # keyword_tfidf_scores_list.append(keyword_tfidf_scores)
-    
-    combined_scores = {}
-    for keyword in keywords:
-        # combined_score = 1.0 * bert_scores[keyword] + 0.0 * keyword_tfidf_scores[keyword]
-        combined_score = 1.0 * bert_scores[keyword] 
-        combined_scores[keyword] = combined_score
-    combined_scores_list.append(combined_scores)
+	bert_scores = {keywords[i]: cosine_similarity(input_embeds[j], keyword_embeds[i]).item() for i in range(len(keywords))}
+	bert_scores_list.append(bert_scores)
+	
+	# texts = [seg_user_input[j]] + keywords
+	# vectorizer = TfidfVectorizer()
+	# tfidf_matrix = vectorizer.fit_transform(texts)
+	# tfidf_array = tfidf_matrix.toarray()
+	# keyword_tfidf_scores = {keywords[i]: tfidf_array[0] @ tfidf_array[i + 1] for i in range(len(keywords))}
+	# keyword_tfidf_scores_list.append(keyword_tfidf_scores)
+	
+	combined_scores = {}
+	for keyword in keywords:
+		# combined_score = 1.0 * bert_scores[keyword] + 0.0 * keyword_tfidf_scores[keyword]
+		combined_score = 1.0 * bert_scores[keyword] 
+		combined_scores[keyword] = combined_score
+	combined_scores_list.append(combined_scores)
 
 for j in range(len(input_embeds)):
-    print(f"Input {j+1}:")
-    sorted_keywords = sorted(combined_scores_list[j].items(), key=lambda x: x[1], reverse=True)[:5]
-    for keyword, score in sorted_keywords:
-        print(f"{keyword}: {score}")
-    print()
+	print(f"Input {j+1}:")
+	sorted_keywords = sorted(combined_scores_list[j].items(), key=lambda x: x[1], reverse=True)[:1]
+	for keyword, score in sorted_keywords:
+		print(f"{keyword}: {score}")
+		potential_keywords.add(keyword)
+		if score > threshold:
+			final_keywords.add(keyword)
+	print()
+
+if not final_keywords:
+	final_keywords = potential_keywords
+print(final_keywords)
