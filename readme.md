@@ -28,6 +28,10 @@ on failure: {
     "result": "fail"
 }
 
+## how to use
+pip install nltk
+
+
 # Frontend
 Before running the front end, please first ensure that the backend, that is, backend/app.py is running normally.
 ## how to use
