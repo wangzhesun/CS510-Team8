@@ -40,16 +40,16 @@ class ModelName:
         pre_dis_index = KN.predict([input_vector])
         disease = disease_list[pre_dis_index]
         # print(pre_dis)
+
         return disease
 
     def analyze(self, query):
         
         self.query = query
         processed_user_symptoms = process_user_input(query)
-        # user_symptoms = processed_user_symptoms.split(",")
+        # user_symptoms = [sym.replace("'","") for sym in processed_user_symptoms]
         user_symptoms = [sym.strip() for sym in processed_user_symptoms]
-        print(processed_user_symptoms)
-        print(user_symptoms)
+        print("symptoms in query: ",user_symptoms)
         model = ModelName()
         predicted_disease = model.predict(user_symptoms)
         print(predicted_disease)
