@@ -30,6 +30,10 @@ on failure: {
 
 # Frontend
 Before running the front end, please first ensure that the backend, that is, backend/app.py is running normally.
-## how to use
-1. please run ``pip install -r requirement.txt`` at first
-2. run ``streamlit run frontend.py``
+
+# how to use
+1. please run ``pip install -r requirements.txt`` at first
+2. run ``cd backend``
+3. run backend ``flask run``
+4. open new terminal and run``cd frontend``
+5. run frontend``streamlit run frontend.py``
