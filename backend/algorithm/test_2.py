@@ -7,6 +7,10 @@ import pandas as pd
 import nltk
 from nltk.tokenize import word_tokenize
 
+# Download the necessary NLTK resources
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
 def chunk_sentence(sentence):
     # Tokenize the sentence into words
     words = word_tokenize(sentence)
