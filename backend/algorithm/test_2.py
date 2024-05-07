@@ -6,14 +6,38 @@ import pandas as pd
 
 import nltk
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 # Download the necessary NLTK resources
 nltk.download('punkt')
+nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger')
 
 threshold = 0.8
 final_keywords = set()
 potential_keywords = set()
+
+
+# Define a function to check if a phrase is meaningful
+def is_meaningful(phrase):
+    words = nltk.word_tokenize(phrase)
+    pos_tags = nltk.pos_tag(words)
+    
+    # Check if the phrase contains at least one meaningful word
+    # meaningful_tags = ['NN', 'NNS', 'NNP', 'NNPS', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS']
+    meaningful_tags = ['NN', 'NNS', 'NNP', 'NNPS', 'VB', 'VBD', 'VBN', 'VBZ']
+    # remove 'vbp' , 'VBG','JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'
+    
+    if len(words) == 1:
+        word = words[0]
+        tag = pos_tags[0][1]
+        # print(word,tag)
+        return tag in meaningful_tags and word.lower() not in stop_words
+    else:
+        return any(tag in meaningful_tags for word, tag in pos_tags)
+
+
+
 
 def chunk_sentence(sentence):
 	# Tokenize the sentence into words
@@ -67,13 +91,20 @@ training = pd.read_csv('Training.csv')
 user_input = "I've been experiencing a persistent cough and mild fever over the last week. "
 seg_user_input=chunk_sentence(user_input)
 
+# Define a set of stopwords
+stop_words = set(stopwords.words('english'))
+
+# Filter out less meaningful phrases
+meaningful_user_input = [phrase for phrase in seg_user_input if is_meaningful(phrase)]
+
+
 # user_input = "I have been dealing with severe headaches and dizziness for the past three days. It's worse in the morning. I also notice that my vision blurs occasionally, and I feel nauseous from time to time."
 symptoms = training.columns
 symptoms = symptoms[0:-1]
 # keywords = symptoms.tolist()
 keywords = [symptom.replace('_', ' ') for symptom in symptoms]
 
-input_embeds = [get_embedding(text) for text in seg_user_input]
+input_embeds = [get_embedding(text) for text in meaningful_user_input]
 keyword_embeds = [get_embedding(keyword) for keyword in keywords]
 
 bert_scores_list = []
