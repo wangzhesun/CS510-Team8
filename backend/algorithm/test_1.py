@@ -10,7 +10,7 @@ from nltk.tokenize import word_tokenize
 # Download the necessary NLTK resources
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
-# nltk.download('stopwords')
+nltk.download('stopwords')
 
 threshold = 0.69
 
